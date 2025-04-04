@@ -34,7 +34,13 @@ class GameState:
         
         self.white_to_move = not self.white_to_move # switch turns
 
-    
+    def undo_move(self):
+        """Undo the last move made"""
+        if len(self.move_log) != 0: # check if there are any moves to undo
+            move = self.move_log.pop()
+            self.board[move.start_row][move.start_col] = move.piece_moved
+            self.board[move.end_row][move.end_col] = move.piece_captured
+            self.white_to_move = not self.white_to_move
 
 class Move:
     """Class to store a move made by a player"""
