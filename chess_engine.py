@@ -34,6 +34,8 @@ class GameState:
         
         self.white_to_move = not self.white_to_move # switch turns
 
+    
+
 class Move:
     """Class to store a move made by a player"""
 
