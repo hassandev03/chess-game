@@ -70,7 +70,7 @@ class GameState:
     """
     the following methods are used to get the moves for each piece type
     """
-    
+
     def get_pawn_moves(self, row, col, moves):
         """Get all possible moves for a pawn"""
 
@@ -109,18 +109,91 @@ class GameState:
     
     def get_rook_moves(self, row, col, moves):
         """Get all possible moves for a rook"""
+        directions = [(-1, 0), (1, 0), (0, 1), (0, -1)] # up, down, right, left
+        enemy_color = "b" if self.white_to_move else "w"
+
+        for dir in directions:
+            for i in range(1, 8): # can move at max 7 squares in 4 basic directions
+                # calculate the new row and column
+                new_row = row + dir[0] * i
+                new_col = col + dir[1] * i
+                if 0 <= new_row < 8 and 0 <= new_col < 8: # check if the new square is on the board
+
+                    end_piece = self.board[new_row][new_col]
+                    if end_piece == "--":
+                        moves.append(Move((row, col), (new_row, new_col), self.board))
+
+                    elif end_piece[0] == enemy_color: # capture the piece
+                        moves.append(Move((row, col), (new_row, new_col), self.board))
+                        break # stop moving in this direction
+                    
+                    else: # friendly piece
+                        break # stop moving in this direction
+                else:
+                    break
 
     def get_knight_moves(self, row, col, moves):
         """Get all possible moves for a knight"""
+        knight_moves = [(-2, -1), (-1, -2), (1, -2), (2, -1), (2, 1), (1, 2), (-1, 2), (-2, 1)]  # all possible knight moves
+        ally_color = "w" if self.white_to_move else "b"
+
+        for move in knight_moves:
+            new_row = row + move[0]
+            new_col = col + move[1]
+
+            # knight can jump over pieces, so we don't need to check for empty squares in between
+            if 0 <= new_row < 8 and 0 <= new_col < 8:
+                end_piece = self.board[new_row][new_col]
+                if end_piece[0] != ally_color: # not a friendly piece; either empty or enemy piece
+                    moves.append(Move((row, col), (new_row, new_col), self.board))
+
 
     def get_bishop_moves(self, row, col, moves):
         """Get all possible moves for a bishop"""
+        directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)] # up-left, up-right, down-left, down-right
+        enemy_color = "b" if self.white_to_move else "w"
+
+        for dir in directions:
+            for i in range(1, 8): # can move at max 7 squares diagonally
+                # calculate the new row and column
+                new_row = row + dir[0] * i
+                new_col = col + dir[1] * i
+                if 0 <= new_row < 8 and 0 <= new_col < 8: # check if the new square is on the board
+
+                    end_piece = self.board[new_row][new_col]
+                    if end_piece == "--":
+                        moves.append(Move((row, col), (new_row, new_col), self.board))
+
+                    elif end_piece[0] == enemy_color: # capture the piece
+                        moves.append(Move((row, col), (new_row, new_col), self.board))
+                        break # stop moving in this direction
+                    
+                    else: # friendly piece
+                        break # stop moving in this direction
+                else:
+                    break
 
     def get_queen_moves(self, row, col, moves):
         """Get all possible moves for a queen"""
+        # queen moves like a rook and bishop combined
+        # so we can just call the rook and bishop move functions
+        self.get_rook_moves(row, col, moves)
+        self.get_bishop_moves(row, col, moves)
 
     def get_king_moves(self, row, col, moves):
         """Get all possible moves for a king"""
+        # king can move one square in any direction, so we can just check all 8 possible moves
+        king_moves = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)] 
+        ally_color = "w" if self.white_to_move else "b"
+
+        for i in range(len(king_moves)):
+            new_row = row + king_moves[i][0]
+            new_col = col + king_moves[i][1]
+
+            if 0 <= new_row < 8 and 0 <= new_col < 8:
+                end_piece = self.board[new_row][new_col]
+                if end_piece[0] != ally_color: # not a friendly piece; either empty or enemy piece
+                    moves.append(Move((row, col), (new_row, new_col), self.board))
     
 
 class Move:
