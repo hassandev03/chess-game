@@ -129,12 +129,24 @@ class GameState:
                     
                     else: # friendly piece
                         break # stop moving in this direction
-
                 else:
                     break
 
     def get_knight_moves(self, row, col, moves):
         """Get all possible moves for a knight"""
+        knight_moves = [(-2, -1), (-1, -2), (1, -2), (2, -1), (2, 1), (1, 2), (-1, 2), (-2, 1)]  # all possible knight moves
+        ally_color = "w" if self.white_to_move else "b"
+
+        for move in knight_moves:
+            new_row = row + move[0]
+            new_col = col + move[1]
+
+            # knight can jump over pieces, so we don't need to check for empty squares in between
+            if 0 <= new_row < 8 and 0 <= new_col < 8:
+                end_piece = self.board[new_row][new_col]
+                if end_piece[0] != ally_color: # not a friendly piece; either empty or enemy piece
+                    moves.append(Move((row, col), (new_row, new_col), self.board))
+
 
     def get_bishop_moves(self, row, col, moves):
         """Get all possible moves for a bishop"""
@@ -158,7 +170,6 @@ class GameState:
                     
                     else: # friendly piece
                         break # stop moving in this direction
-
                 else:
                     break
 
