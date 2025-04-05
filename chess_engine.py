@@ -32,13 +32,22 @@ class GameState:
         self.white_to_move = True
         self.move_log = []
 
+        self.white_king_location = (7, 4) # row, col
+        self.black_king_location = (0, 4) # row, col
+
     def make_move(self, move):
         """Make a move on the board"""
         self.board[move.start_row][move.start_col] = "--" # remove the piece from the old square
         self.board[move.end_row][move.end_col] = move.piece_moved # move the piece to the new square
         self.move_log.append(move) # log the move
         
-        self.white_to_move = not self.white_to_move # switch turns
+        # update the king's location if the piece moved is a king
+        if move.piece_moved == "bK":
+            self.black_king_location = (move.end_row, move.end_col)
+        elif move.piece_moved == "wK":
+            self.white_king_location = (move.end_row, move.end_col)
+
+        self.white_to_move = not self.white_to_move # switch turns 
 
     def undo_move(self):
         """Undo the last move made"""
@@ -46,6 +55,13 @@ class GameState:
             move = self.move_log.pop()
             self.board[move.start_row][move.start_col] = move.piece_moved
             self.board[move.end_row][move.end_col] = move.piece_captured
+
+            # undo the king's location 
+            if move.piece_moved == "bK":
+                self.black_king_location = (move.start_row, move.start_col)
+            elif move.piece_moved == "wK":
+                self.white_king_location = (move.start_row, move.start_col)
+
             self.white_to_move = not self.white_to_move
 
     def get_all_possible_moves(self):
