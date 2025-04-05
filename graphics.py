@@ -10,7 +10,7 @@ class Graphics:
     """
     def draw_board(screen):
         """ draws the squares on the board"""
-        colors = [p.Color("white"), p.Color("gray")]
+        colors = [p.Color("white"), p.Color("burlywood4")]
         for row in range(configs.DIMENSION):
             for col in range(configs.DIMENSION):
                 color = colors[((row + col) % 2)]

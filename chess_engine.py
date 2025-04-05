@@ -22,7 +22,13 @@ class GameState:
             ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"],
         ]
-
+        self.move_functions = {
+            "P": self.get_pawn_moves,
+            "R": self.get_rook_moves,
+            "N": self.get_knight_moves,
+            "B": self.get_bishop_moves,
+            "Q": self.get_queen_moves,
+            "K": self.get_king_moves}
         self.white_to_move = True
         self.move_log = []
 
@@ -51,19 +57,8 @@ class GameState:
                 if (turn == "w" and self.white_to_move) or (turn == "b" and not self.white_to_move):
                     piece = self.board[row][col][1]
 
-                    # check the piece type and call the appropriate function to get the moves
-                    if piece == "P":
-                        self.get_pawn_moves(row, col, moves)
-                    elif piece == "R":
-                        self.get_rook_moves(row, col, moves)
-                    elif piece == "N":
-                        self.get_knight_moves(row, col, moves)
-                    elif piece == "B":
-                        self.get_bishop_moves(row, col, moves)
-                    elif piece == "Q":
-                        self.get_queen_moves(row, col, moves)
-                    elif piece == "K":
-                        self.get_king_moves(row, col, moves)
+                    # call the appropriate function to get the moves
+                    self.move_functions[piece](row, col, moves)
 
         return moves
         
@@ -74,6 +69,39 @@ class GameState:
     # the following methods are used to get the moves for each piece type
     def get_pawn_moves(self, row, col, moves):
         """Get all possible moves for a pawn"""
+
+        # white pawn moves
+        if self.white_to_move: 
+            if self.board[row - 1][col] == "--": # 1 square pawn advance
+                moves.append(Move((row, col), (row - 1, col), self.board))
+                if row == 6 and self.board[row - 2][col] == '--': # 2 square pawn advance
+                    moves.append(Move((row, col), (row - 2, col), self.board))
+
+            # capture diagonally
+            if col - 1 >= 0: # capture left
+                if self.board[row - 1][col - 1][0] == "b": # capture left
+                    moves.append(Move((row, col), (row - 1, col - 1), self.board))
+
+            if col + 1 <= 7: # capture right
+                if self.board[row - 1][col + 1][0] == "b": # capture right
+                    moves.append(Move((row, col), (row - 1, col + 1), self.board))
+
+        # black pawn moves
+        else:
+            if self.board[row + 1][col] == "--":
+                moves.append(Move((row, col), (row + 1, col), self.board))
+                if row == 1 and self.board[row + 2][col] == '--':
+                    moves.append(Move((row, col), (row + 2, col), self.board))
+            
+            # capture diagonally
+            if col - 1 >= 0: # capture left
+                if self.board[row + 1][col - 1][0] == "w": # capture left
+                    moves.append(Move((row, col), (row + 1, col - 1), self.board))
+            
+            if col + 1 <= 7: # capture right
+                if self.board[row + 1][col + 1][0] == "w": # capture right
+                    moves.append(Move((row, col), (row + 1, col + 1), self.board))
+        
     
     def get_rook_moves(self, row, col, moves):
         """Get all possible moves for a rook"""
