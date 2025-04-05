@@ -80,8 +80,44 @@ class GameState:
         
     def get_valid_moves(self):
         """Get all valid moves for the current player"""
-        return self.get_all_possible_moves()
-    
+
+        # first get all possible moves
+        moves = self.get_all_possible_moves()
+        # for each move, make the move
+        for i in range(len(moves) - 1, -1, -1):
+            self.make_move(moves[i])
+            # when make_move is called, the turn is switched, so we need to change it back to the current player before checking for check
+            self.white_to_move = not self.white_to_move
+
+            # generate all possible moves for the opponent and for each move, check if the king is in check
+            if self.in_check():
+                moves.remove(moves[i])
+            
+            self.white_to_move = not self.white_to_move # switch back to the current player's turn
+            self.undo_move() # undo the move made to check for check
+
+        return moves # return the valid moves
+
+    def in_check(self):
+        """Check if the current player is in check"""
+        if self.white_to_move:
+            return self.square_under_attack(self.white_king_location[0], self.white_king_location[1])
+        else:
+            return self.square_under_attack(self.black_king_location[0], self.black_king_location[1])
+
+
+    def square_under_attack(self, row, col):
+        """Check if a square is under attack by enemy"""
+        self.white_to_move = not self.white_to_move # switch to opponent's turn
+        enemy_moves = self.get_all_possible_moves() # get all possible moves for the opponent
+        self.white_to_move = not self.white_to_move # switch back to current player's turn
+
+        for move in enemy_moves:
+            if move.end_row == row and move.end_col == col: # check if the move ends on the square
+                return True # square is under attack
+            
+        return False # square is not under attack
+
 
     """
     the following methods are used to get the moves for each piece type
