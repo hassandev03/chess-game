@@ -49,9 +49,11 @@ def main():
                         gs.make_move(move) # make the move on the board
                         move_made = True
 
-                    # reset the user clicks and moves
-                    square_selected = ()
-                    player_clicks = []
+                        # reset the user clicks and moves
+                        square_selected = ()
+                        player_clicks = []
+                    else:
+                        player_clicks = [square_selected]
 
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z: # undo the last move made

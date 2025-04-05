@@ -175,9 +175,25 @@ class GameState:
 
     def get_queen_moves(self, row, col, moves):
         """Get all possible moves for a queen"""
+        # queen moves like a rook and bishop combined
+        # so we can just call the rook and bishop move functions
+        self.get_rook_moves(row, col, moves)
+        self.get_bishop_moves(row, col, moves)
 
     def get_king_moves(self, row, col, moves):
         """Get all possible moves for a king"""
+        # king can move one square in any direction, so we can just check all 8 possible moves
+        king_moves = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)] 
+        ally_color = "w" if self.white_to_move else "b"
+
+        for i in range(len(king_moves)):
+            new_row = row + king_moves[i][0]
+            new_col = col + king_moves[i][1]
+
+            if 0 <= new_row < 8 and 0 <= new_col < 8:
+                end_piece = self.board[new_row][new_col]
+                if end_piece[0] != ally_color: # not a friendly piece; either empty or enemy piece
+                    moves.append(Move((row, col), (new_row, new_col), self.board))
     
 
 class Move:
