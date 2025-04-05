@@ -16,7 +16,10 @@ def main():
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
     gs = chess_engine.GameState()
-    print(gs.board)
+
+    valid_moves = gs.get_valid_moves() # get all valid moves for the current player
+    move_made = False # flag to check if a move was made
+
     configs.load_images() # load images once
 
     square_selected = () # keep track of the last square selected (x, y)
@@ -41,20 +44,27 @@ def main():
                 if len(player_clicks) == 2: # after two clicks
                     move = chess_engine.Move(player_clicks[0], player_clicks[1], gs.board)
                     print(move.get_chess_notation())
-                    gs.make_move(move) # make the move on the board
+
+                    if move in valid_moves: # check if the move is valid
+                        gs.make_move(move) # make the move on the board
+                        move_made = True
 
                     # reset the user clicks and moves
                     square_selected = ()
                     player_clicks = []
 
             elif e.type == p.KEYDOWN:
-                if e.key == p.K_z:
+                if e.key == p.K_z: # undo the last move made
                     gs.undo_move()
+                    move_made = True
+
+        if move_made:
+            valid_moves = gs.get_valid_moves()
+            move_made = False
 
         clock.tick(configs.MAX_FPS)
         Graphics.draw_game_state(screen, gs)
         p.display.flip()
-
 
 
 

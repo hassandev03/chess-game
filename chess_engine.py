@@ -42,6 +42,55 @@ class GameState:
             self.board[move.end_row][move.end_col] = move.piece_captured
             self.white_to_move = not self.white_to_move
 
+    def get_all_possible_moves(self):
+        """Get all possible moves for the current player"""
+        moves = []
+        for row in range(len(self.board)): # rows of the board
+            for col in range(len(self.board[row])): #  columns of the board
+                turn = self.board[row][col][0] # get the color of the piece
+                if (turn == "w" and self.white_to_move) or (turn == "b" and not self.white_to_move):
+                    piece = self.board[row][col][1]
+
+                    # check the piece type and call the appropriate function to get the moves
+                    if piece == "P":
+                        self.get_pawn_moves(row, col, moves)
+                    elif piece == "R":
+                        self.get_rook_moves(row, col, moves)
+                    elif piece == "N":
+                        self.get_knight_moves(row, col, moves)
+                    elif piece == "B":
+                        self.get_bishop_moves(row, col, moves)
+                    elif piece == "Q":
+                        self.get_queen_moves(row, col, moves)
+                    elif piece == "K":
+                        self.get_king_moves(row, col, moves)
+
+        return moves
+        
+    def get_valid_moves(self):
+        """Get all valid moves for the current player"""
+        return self.get_all_possible_moves()
+    
+    # the following methods are used to get the moves for each piece type
+    def get_pawn_moves(self, row, col, moves):
+        """Get all possible moves for a pawn"""
+    
+    def get_rook_moves(self, row, col, moves):
+        """Get all possible moves for a rook"""
+
+    def get_knight_moves(self, row, col, moves):
+        """Get all possible moves for a knight"""
+
+    def get_bishop_moves(self, row, col, moves):
+        """Get all possible moves for a bishop"""
+
+    def get_queen_moves(self, row, col, moves):
+        """Get all possible moves for a queen"""
+
+    def get_king_moves(self, row, col, moves):
+        """Get all possible moves for a king"""
+    
+
 class Move:
     """Class to store a move made by a player"""
 
@@ -82,6 +131,14 @@ class Move:
         self.piece_moved = board[self.start_row][self.start_col]
         self.piece_captured = board[self.end_row][self.end_col]
 
+        self.move_id = self.start_row + self.start_col * 10 + self.end_row * 100 + self.end_col * 1000
+
+    
+    def __eq__(self, other):
+        """Check if two moves are equal"""
+        if isinstance(other, Move):
+            return self.move_id == other.move_id
+        return False
 
     def get_chess_notation(self):
         """returns the chess notation of the move"""
