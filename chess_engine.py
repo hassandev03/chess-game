@@ -66,7 +66,11 @@ class GameState:
         """Get all valid moves for the current player"""
         return self.get_all_possible_moves()
     
-    # the following methods are used to get the moves for each piece type
+
+    """
+    the following methods are used to get the moves for each piece type
+    """
+    
     def get_pawn_moves(self, row, col, moves):
         """Get all possible moves for a pawn"""
 
