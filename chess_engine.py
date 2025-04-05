@@ -113,10 +113,11 @@ class GameState:
         enemy_color = "b" if self.white_to_move else "w"
 
         for dir in directions:
-            for i in range(1, 8):
+            for i in range(1, 8): # can move at max 7 squares in 4 basic directions
+                # calculate the new row and column
                 new_row = row + dir[0] * i
                 new_col = col + dir[1] * i
-                if 0 <= new_row < 8 and 0 <= new_col < 8:
+                if 0 <= new_row < 8 and 0 <= new_col < 8: # check if the new square is on the board
 
                     end_piece = self.board[new_row][new_col]
                     if end_piece == "--":
@@ -137,6 +138,29 @@ class GameState:
 
     def get_bishop_moves(self, row, col, moves):
         """Get all possible moves for a bishop"""
+        directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)] # up-left, up-right, down-left, down-right
+        enemy_color = "b" if self.white_to_move else "w"
+
+        for dir in directions:
+            for i in range(1, 8): # can move at max 7 squares diagonally
+                # calculate the new row and column
+                new_row = row + dir[0] * i
+                new_col = col + dir[1] * i
+                if 0 <= new_row < 8 and 0 <= new_col < 8: # check if the new square is on the board
+
+                    end_piece = self.board[new_row][new_col]
+                    if end_piece == "--":
+                        moves.append(Move((row, col), (new_row, new_col), self.board))
+
+                    elif end_piece[0] == enemy_color: # capture the piece
+                        moves.append(Move((row, col), (new_row, new_col), self.board))
+                        break # stop moving in this direction
+                    
+                    else: # friendly piece
+                        break # stop moving in this direction
+
+                else:
+                    break
 
     def get_queen_moves(self, row, col, moves):
         """Get all possible moves for a queen"""
