@@ -35,6 +35,9 @@ class GameState:
         self.white_king_location = (7, 4) # row, col
         self.black_king_location = (0, 4) # row, col
 
+        self.check_mate = False
+        self.stale_mate = False
+
     def make_move(self, move):
         """Make a move on the board"""
         self.board[move.start_row][move.start_col] = "--" # remove the piece from the old square
@@ -95,6 +98,16 @@ class GameState:
             
             self.white_to_move = not self.white_to_move # switch back to the current player's turn
             self.undo_move() # undo the move made to check for check
+
+        # if there are no valid moves, check for checkmate or stalemate
+        if len(moves) == 0: 
+            if self.in_check():
+                self.check_mate = True
+            else:
+                self.stale_mate = True
+        else:
+            self.check_mate = False
+            self.stale_mate = False
 
         return moves # return the valid moves
 

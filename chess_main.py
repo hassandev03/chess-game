@@ -45,14 +45,16 @@ def main():
                     move = chess_engine.Move(player_clicks[0], player_clicks[1], gs.board)
                     print(move.get_chess_notation())
 
-                    if move in valid_moves: # check if the move is valid
-                        gs.make_move(move) # make the move on the board
-                        move_made = True
+                    for i in range(len(valid_moves)):
+                        if move == valid_moves[i]:
+                            gs.make_move(valid_moves[i]) # make the move on the board
+                            move_made = True
 
-                        # reset the user clicks and moves
-                        square_selected = ()
-                        player_clicks = []
-                    else:
+                            # reset the user clicks and moves
+                            square_selected = ()
+                            player_clicks = []
+                            
+                    if not move_made: 
                         player_clicks = [square_selected]
 
             elif e.type == p.KEYDOWN:
