@@ -38,6 +38,8 @@ class GameState:
         self.check_mate = False
         self.stale_mate = False
 
+        self.en_passant_possible = () 
+
     def make_move(self, move):
         """Make a move on the board"""
         self.board[move.start_row][move.start_col] = "--" # remove the piece from the old square
@@ -51,6 +53,21 @@ class GameState:
             self.white_king_location = (move.end_row, move.end_col)
 
         self.white_to_move = not self.white_to_move # switch turns 
+
+        # check if the move is a pawn promotion
+        if move.is_pawn_promotion:
+            self.board[move.end_row][move.end_col] = move.piece_moved[0] + "Q" # promote to queen
+
+        # en-passant
+        if move.is_en_passant_move:
+            self.board[move.start_row][move.end_col] = "--" # remove the captured pawn
+
+        # update en-passant possible variable
+        if move.piece_moved[1] == "P" and abs(move.start_row - move.end_row) == 2: # pawn moved two squares
+            self.en_passant_possible = ((move.start_row + move.end_row) // 2, move.start_col) # set the en-passant square to the square behind the pawn
+        # if the pawn moved one square, reset the en-passant variable
+        else:
+            self.en_passant_possible = ()
 
     def undo_move(self):
         """Undo the last move made"""
@@ -150,10 +167,14 @@ class GameState:
             if col - 1 >= 0: # capture left
                 if self.board[row - 1][col - 1][0] == "b": # capture left
                     moves.append(Move((row, col), (row - 1, col - 1), self.board))
+                elif (row - 1, col - 1) == self.en_passant_possible:
+                    moves.append(Move((row, col), (row - 1, col - 1), self.board, is_en_passant_move=True)) # en passant left
 
             if col + 1 <= 7: # capture right
                 if self.board[row - 1][col + 1][0] == "b": # capture right
                     moves.append(Move((row, col), (row - 1, col + 1), self.board))
+                elif (row - 1, col + 1) == self.en_passant_possible:
+                    moves.append(Move((row, col), (row - 1, col + 1), self.board, is_en_passant_move=True)) # en passant right
 
         # black pawn moves
         else:
@@ -166,10 +187,14 @@ class GameState:
             if col - 1 >= 0: # capture left
                 if self.board[row + 1][col - 1][0] == "w": # capture left
                     moves.append(Move((row, col), (row + 1, col - 1), self.board))
+                elif (row + 1, col - 1) == self.en_passant_possible:
+                    moves.append(Move((row, col), (row + 1, col - 1), self.board, is_en_passant_move=True)) # en passant left
             
             if col + 1 <= 7: # capture right
                 if self.board[row + 1][col + 1][0] == "w": # capture right
                     moves.append(Move((row, col), (row + 1, col + 1), self.board))
+                elif (row + 1, col + 1) == self.en_passant_possible:
+                    moves.append(Move((row, col), (row + 1, col + 1), self.board, is_en_passant_move=True)) # en passant right
         
     
     def get_rook_moves(self, row, col, moves):
@@ -292,7 +317,7 @@ class Move:
     }
     cols_to_files = {v: k for k, v in files_to_cols.items()}
 
-    def __init__(self, start_square, end_square, board):
+    def __init__(self, start_square, end_square, board, is_en_passant_move=False):
         self.start_row = start_square[0]
         self.start_col = start_square[1]
         self.end_row = end_square[0]
@@ -302,8 +327,14 @@ class Move:
         self.piece_captured = board[self.end_row][self.end_col]
 
         self.move_id = self.start_row + self.start_col * 10 + self.end_row * 100 + self.end_col * 1000
-
+        
+        # pawn promotion
+        self.is_pawn_promotion = (self.piece_moved == 'wP' and self.end_row == 0) or (self.piece_moved == 'bP' and self.end_row == 7)
     
+        # en passant
+        self.is_en_passant_move = is_en_passant_move
+
+
     def __eq__(self, other):
         """Check if two moves are equal"""
         if isinstance(other, Move):
