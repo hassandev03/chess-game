@@ -3,6 +3,7 @@ this is responsible for handling user input and running the whole game and
 displaying current GameState object
 """
 import pygame as p
+import chess_ai
 import chess_engine
 from graphics import Graphics
 import configs
@@ -31,14 +32,21 @@ def main():
     player_clicks = []  # keep track of player clicks; two tuples: [(row1, col1), (row2, col2)]
     
     game_over = False  # flag to check if the game is over
+
+    player_one = True  # True if human is playing, False if AI is playing
+    player_two = False  # True if human is playing, False if AI is playing
+
+
     running = True
     while running:
+        # check if it's the human player's turn
+        human_turn = (gs.white_to_move and player_one) or (not gs.white_to_move and player_two) 
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
                 
             elif e.type == p.MOUSEBUTTONDOWN:
-                if not game_over:  # only allow clicks if the game is not over
+                if not game_over and human_turn:  # only allow clicks if the game is not over
                     if not promotion_active:
                         location = p.mouse.get_pos()  # get mouse position (x, y)
                         col = location[0] // configs.SQUARE_SIZE
@@ -120,6 +128,12 @@ def main():
                     promotion_active = False  # reset promotion active flag
                     promotion_move = None  # reset promotion move
 
+        # AI move
+        if not game_over and not human_turn:
+            ai_move = chess_ai.ChessAI.find_best_move(gs, valid_moves)  # get the best move from AI
+            gs.make_move(ai_move)
+            move_made = True
+            animate = True
 
         if move_made:
             if animate:
