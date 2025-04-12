@@ -116,4 +116,16 @@ class Graphics:
                                configs.SQUARE_SIZE, configs.SQUARE_SIZE))
             
             p.display.flip()
-            clock.tick(60)  # control the speed of the animation
+            clock.tick(60)  
+
+    @staticmethod
+    def display_text(screen, text):
+        """Display text on the screen"""
+        font = p.font.SysFont("Roboto", 50, False, True)
+        text_object = font.render(text, True, p.Color("gray"))
+        text_location = p.Rect(0, 0, configs.WIDTH, configs.HEIGHT).move(configs.WIDTH // 2 - text_object.get_width() // 2, 
+                                   configs.HEIGHT // 2 - text_object.get_height() // 2)
+        screen.blit(text_object, text_location)
+        text_object = font.render(text, True, p.Color("cyan"))
+        screen.blit(text_object, text_location.move(1, -2))  # Slightly offset for shadow effect
+        
