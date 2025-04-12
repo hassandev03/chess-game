@@ -42,9 +42,9 @@ class GameState:
 
     def make_move(self, move):
         """Make a move on the board"""
-        self.board[move.start_row][move.start_col] = "--" # remove the piece from the old square
-        self.board[move.end_row][move.end_col] = move.piece_moved # move the piece to the new square
-        self.move_log.append(move) # log the move
+        self.board[move.start_row][move.start_col] = "--"  # remove the piece from the old square
+        self.board[move.end_row][move.end_col] = move.piece_moved  # move the piece to the new square
+        self.move_log.append(move)  # log the move
         
         # update the king's location if the piece moved is a king
         if move.piece_moved == "bK":
@@ -52,23 +52,15 @@ class GameState:
         elif move.piece_moved == "wK":
             self.white_king_location = (move.end_row, move.end_col)
 
-        self.white_to_move = not self.white_to_move # switch turns 
-
         # check if the move is a pawn promotion
         if move.is_pawn_promotion:
-            while (True):
-                print("Pawn promotion! Choose the piece to promote to:")
-                print("Q - Queen, R - Rook, B - Bishop, N - Knight")
-                promoted_piece = input("Enter the piece to promote to (Q, R, B, N): ").strip().upper()
+            if move.promotion_choice:
+                self.board[move.end_row][move.end_col] = move.piece_moved[0] + move.promotion_choice
+            else:
+                # Default to Queen if no choice provided (for simplicity)
+                self.board[move.end_row][move.end_col] = move.piece_moved[0] + "Q"
 
-                if promoted_piece in ["Q", "R", "B", "N"]:
-                    break
-                else:
-                    print("Invalid input. Please enter Q, R, B, or N.")
-                    
-            self.board[move.end_row][move.end_col] = move.piece_moved[0] + "Q" # promote to queen
-
-        # en-passant - FIX HERE
+        # en-passant move
         if move.is_en_passant_move:
             if move.piece_moved[0] == "w":  # White pawn capturing black pawn
                 self.board[move.start_row][move.end_col] = "--"  # remove the captured black pawn
@@ -76,11 +68,14 @@ class GameState:
                 self.board[move.start_row][move.end_col] = "--"  # remove the captured white pawn
 
         # update en-passant possible variable
-        if move.piece_moved[1] == "P" and abs(move.start_row - move.end_row) == 2: # pawn moved two squares
-            self.en_passant_possible = ((move.start_row + move.end_row) // 2, move.start_col) # set the en-passant square to the square behind the pawn
-        # if the pawn moved one square, reset the en-passant variable
+        if move.piece_moved[1] == "P" and abs(move.start_row - move.end_row) == 2:  # pawn moved two squares
+            self.en_passant_possible = ((move.start_row + move.end_row) // 2, move.start_col)  # set the en-passant square
         else:
             self.en_passant_possible = ()
+
+        # After making the move, switch turns only if this wasn't a promotion without a choice
+        if not (move.is_pawn_promotion and not move.promotion_choice):
+            self.white_to_move = not self.white_to_move  # switch turns
 
     def undo_move(self):
         """Undo the last move made"""
@@ -345,7 +340,7 @@ class Move:
     }
     cols_to_files = {v: k for k, v in files_to_cols.items()}
 
-    def __init__(self, start_square, end_square, board, is_en_passant_move=False):
+    def __init__(self, start_square, end_square, board, is_en_passant_move=False, promotion_choice=None):
         self.start_row = start_square[0]
         self.start_col = start_square[1]
         self.end_row = end_square[0]
@@ -358,6 +353,7 @@ class Move:
 
         # pawn promotion
         self.is_pawn_promotion = (self.piece_moved == 'wP' and self.end_row == 0) or (self.piece_moved == 'bP' and self.end_row == 7)
+        self.promotion_choice = promotion_choice
 
         # en passant
         self.is_en_passant_move = is_en_passant_move
