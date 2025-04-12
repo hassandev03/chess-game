@@ -105,6 +105,9 @@ class GameState:
             
             self.white_to_move = not self.white_to_move
 
+            self.check_mate = False
+            self.stale_mate = False
+
     def get_all_possible_moves(self):
         """Get all possible moves for the current player"""
         moves = []

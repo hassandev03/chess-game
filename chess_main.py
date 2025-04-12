@@ -117,20 +117,23 @@ def main():
                     animate = False
                     promotion_active = False  # Cancel any active promotion
                     promotion_move = None
+                    game_over = False  
+                
                 # reset the game state if 'Esc' is pressed
                 if e.key == p.K_ESCAPE:
-                    gs = chess_engine.GameState()  # reset the game state
-                    valid_moves = gs.get_valid_moves()  # reset valid moves
-                    square_selected = ()  # reset selected square
-                    player_clicks = [] # reset player clicks
-                    move_made = False  # reset move made flag
-                    animate = False  # reset animation flag
-                    promotion_active = False  # reset promotion active flag
-                    promotion_move = None  # reset promotion move
+                    gs = chess_engine.GameState()  
+                    valid_moves = gs.get_valid_moves()  
+                    square_selected = ()  
+                    player_clicks = [] 
+                    move_made = False  
+                    animate = False  
+                    promotion_active = False  
+                    promotion_move = None  
+                    game_over = False  
 
         # AI move
         if not game_over and not human_turn:
-            ai_move = chess_ai.ChessAI.find_best_move(gs, valid_moves)  # get the best move from AI
+            ai_move = chess_ai.ChessAI.find_best_move_min_max(gs, valid_moves)  # get the best move from AI
             gs.make_move(ai_move)
             move_made = True
             animate = True
