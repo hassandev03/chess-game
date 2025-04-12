@@ -20,6 +20,8 @@ def main():
     valid_moves = gs.get_valid_moves()  # get all valid moves for the current player
     move_made = False  # flag to check if a move was made
     
+    animate = False  # flag to check if animation is needed
+
     # New promotion handling variables
     promotion_active = False
     promotion_move = None
@@ -71,6 +73,7 @@ def main():
                                 # Make a normal move
                                 gs.make_move(valid_move)
                                 move_made = True
+                                animate = True
                                 square_selected = ()
                                 player_clicks = []
                         else:
@@ -101,13 +104,16 @@ def main():
                 if e.key == p.K_z:  # undo the last move made
                     gs.undo_move()
                     move_made = True
+                    animate = False
                     promotion_active = False  # Cancel any active promotion
                     promotion_move = None
 
         if move_made:
-            Graphics.animate_move(gs.move_log[-1], screen, gs.board, clock)
+            if animate:
+                Graphics.animate_move(gs.move_log[-1], screen, gs.board, clock)
             valid_moves = gs.get_valid_moves()
             move_made = False
+            animate = False
 
         Graphics.draw_game_state(screen, gs, valid_moves, square_selected)  # draw game state
         
