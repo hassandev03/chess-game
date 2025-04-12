@@ -206,18 +206,18 @@ class GameState:
                 if row == 1 and self.board[row + 2][col] == '--':
                     moves.append(Move((row, col), (row + 2, col), self.board))
 
-        # capture diagonally
-        if col - 1 >= 0 and row < 7: # capture left
-            if self.board[row + 1][col - 1][0] == "w": # capture left
-                moves.append(Move((row, col), (row + 1, col - 1), self.board))
-            elif (row + 1, col - 1) == self.en_passant_possible:
-                moves.append(Move((row, col), (row + 1, col - 1), self.board, is_en_passant_move=True)) # en passant left
+            # capture diagonally
+            if col - 1 >= 0 and row < 7: # capture left
+                if self.board[row + 1][col - 1][0] == "w": # capture left
+                    moves.append(Move((row, col), (row + 1, col - 1), self.board))
+                elif (row + 1, col - 1) == self.en_passant_possible:
+                    moves.append(Move((row, col), (row + 1, col - 1), self.board, is_en_passant_move=True)) # en passant left
 
-        if col + 1 <= 7 and row < 7: # capture right
-            if self.board[row + 1][col + 1][0] == "w": # capture right
-                moves.append(Move((row, col), (row + 1, col + 1), self.board))
-            elif (row + 1, col + 1) == self.en_passant_possible:
-                moves.append(Move((row, col), (row + 1, col + 1), self.board, is_en_passant_move=True)) # en passant right
+            if col + 1 <= 7 and row < 7: # capture right
+                if self.board[row + 1][col + 1][0] == "w": # capture right
+                    moves.append(Move((row, col), (row + 1, col + 1), self.board))
+                elif (row + 1, col + 1) == self.en_passant_possible:
+                    moves.append(Move((row, col), (row + 1, col + 1), self.board, is_en_passant_move=True)) # en passant right
 
 
     def get_rook_moves(self, row, col, moves):

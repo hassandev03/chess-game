@@ -12,7 +12,7 @@ IMAGES = {}
 LIGHT_SQUARE = p.Color("white")
 DARK_SQUARE = p.Color("burlywood4")
 HIGHLIGHT_COLOR = p.Color("yellow")
-
+SELECTED_COLOR = p.Color("blue")
 # Game state flags
 PROMOTION_ACTIVE = False
 PROMOTION_MOVE = None
