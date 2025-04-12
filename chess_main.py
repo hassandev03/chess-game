@@ -22,7 +22,7 @@ def main():
     
     animate = False  # flag to check if animation is needed
 
-    # New promotion handling variables
+    # promotion handling variables
     promotion_active = False
     promotion_move = None
 
@@ -107,6 +107,17 @@ def main():
                     animate = False
                     promotion_active = False  # Cancel any active promotion
                     promotion_move = None
+                # reset the game state if 'Esc' is pressed
+                if e.key == p.K_ESCAPE:
+                    gs = chess_engine.GameState()  # reset the game state
+                    valid_moves = gs.get_valid_moves()  # reset valid moves
+                    square_selected = ()  # reset selected square
+                    player_clicks = [] # reset player clicks
+                    move_made = False  # reset move made flag
+                    animate = False  # reset animation flag
+                    promotion_active = False  # reset promotion active flag
+                    promotion_move = None  # reset promotion move
+
 
         if move_made:
             if animate:
