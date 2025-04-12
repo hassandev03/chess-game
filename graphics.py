@@ -83,3 +83,37 @@ class Graphics:
                 return configs.PROMOTION_CHOICES[index]
         
         return None  # No valid selection
+    
+    @staticmethod
+    def animate_move(move, screen, board, clock):
+        colors = [p.Color("white"), p.Color("burlywood4")]
+        dRow = move.end_row - move.start_row
+        dCow = move.end_col - move.start_col
+
+        frames_per_square = 10  # frames to move one square
+        frame_count = (abs(dRow) + abs(dCow)) * frames_per_square  # total frames to animate
+
+        # Get the piece being moved
+        for frame in range(frame_count + 1): # + 1 to include the end position
+            row, col = (move.start_row + dRow * frame // frame_count, move.start_col + dCow * frame // frame_count)
+            
+            Graphics.draw_board(screen)
+            Graphics.draw_pieces(screen, board)
+
+            # erase the piece from the starting square
+            color = colors[(move.end_row + move.end_col) % 2]
+            end_square = p.Rect(move.end_col * configs.SQUARE_SIZE, move.end_row * configs.SQUARE_SIZE, 
+                                configs.SQUARE_SIZE, configs.SQUARE_SIZE)
+            p.draw.rect(screen, color, end_square)
+
+            # draw the captured piece onto the rectangl if any
+            if move.piece_captured != "--":
+                screen.blit(configs.IMAGES[move.piece_captured], end_square)
+
+            # draw the moving piece
+            screen.blit(configs.IMAGES[move.piece_moved], 
+                        p.Rect(col * configs.SQUARE_SIZE, row * configs.SQUARE_SIZE, 
+                               configs.SQUARE_SIZE, configs.SQUARE_SIZE))
+            
+            p.display.flip()
+            clock.tick(60)  # control the speed of the animation

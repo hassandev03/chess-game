@@ -105,6 +105,7 @@ def main():
                     promotion_move = None
 
         if move_made:
+            Graphics.animate_move(gs.move_log[-1], screen, gs.board, clock)
             valid_moves = gs.get_valid_moves()
             move_made = False
 
