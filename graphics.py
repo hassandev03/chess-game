@@ -3,12 +3,6 @@ import configs
 
 class Graphics:
     @staticmethod
-    def draw_game_state(screen, gs):
-        """Draw the current state of the game"""
-        Graphics.draw_board(screen)  # draw squares on the board
-        Graphics.draw_pieces(screen, gs.board)  # draw pieces on top of squares
-
-    @staticmethod
     def draw_board(screen):
         """Draw the squares on the board"""
         colors = [p.Color("white"), p.Color("burlywood4")]
@@ -27,7 +21,31 @@ class Graphics:
                 if piece != "--":  # not empty square
                     screen.blit(configs.IMAGES[piece], p.Rect(c * configs.SQUARE_SIZE, r * configs.SQUARE_SIZE, 
                                                         configs.SQUARE_SIZE, configs.SQUARE_SIZE))
+    @staticmethod
+    def highlight_squares(screen, gs, valid_moves, selected_square):
+        """Highlight the squares on the board"""
+        if selected_square != ():
+            row, col = selected_square
+            # selected square is a piece that can be moved
+            if gs.board[row][col][0] == ('w' if gs.white_to_move else 'b'):
+                surface = p.Surface((configs.SQUARE_SIZE, configs.SQUARE_SIZE))
+                surface.set_alpha(100)
+                surface.fill(p.Color(configs.SELECTED_COLOR))
+                screen.blit(surface, (col * configs.SQUARE_SIZE, row * configs.SQUARE_SIZE))
 
+                # highlight valid moves
+                surface.fill(p.Color(configs.HIGHLIGHT_COLOR))
+                for move in valid_moves:
+                    if move.start_row == row and move.start_col == col:
+                        screen.blit(surface, (move.end_col * configs.SQUARE_SIZE, move.end_row * configs.SQUARE_SIZE))
+
+    @staticmethod
+    def draw_game_state(screen, gs, valid_moves, selected_square):
+        """Draw the current state of the game"""
+        Graphics.draw_board(screen)  # draw squares on the board
+        Graphics.highlight_squares(screen, gs, valid_moves, selected_square)
+        Graphics.draw_pieces(screen, gs.board)  # draw pieces on top of squares
+        
     @staticmethod
     def draw_promotion_menu(screen, col, promoting_white):
         """Draw the promotion menu"""

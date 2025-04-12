@@ -108,7 +108,7 @@ def main():
             valid_moves = gs.get_valid_moves()
             move_made = False
 
-        Graphics.draw_game_state(screen, gs)
+        Graphics.draw_game_state(screen, gs, valid_moves, square_selected)  # draw game state
         
         # Draw promotion menu if active
         if promotion_active:
